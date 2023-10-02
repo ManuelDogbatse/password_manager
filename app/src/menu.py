@@ -1,3 +1,4 @@
+import os
 import sys
 
 from password import generate_password
@@ -17,11 +18,16 @@ def menu():
     if user_input == "1":
         create_row()
     elif user_input == "2":
-        print("Show Specific Password")
+        show_one()
     elif user_input == "3":
         show_all()
     elif user_input == "4":
-        print("Exit")
+        print("Exiting program\n")
+        # "clear" for Mac/Linux, "cls" for Windows
+        if os.name == "posix":
+            os.system("clear")
+        else:
+            os.system("cls")
         sys.exit(0)
     else:
         print("Invalid Input Format. Please Try Again")
@@ -41,7 +47,6 @@ def create_row():
             print("Password Length Too Large. Please Try Again\n")
         else:
             pwd_len = int(user_input)
-    print(f"\npwd_len: {pwd_len}")
     print("\nGenerating Password...")
     password = generate_password(pwd_len)
     print("New Password Generated! Here are the details:")
@@ -52,14 +57,59 @@ def create_row():
                 INSERT INTO password(website, email, password) VALUES
                 (%s, %s, %s)
             """, [website, email, password])
+    input("Press Enter to return to the main menu...\n")
+
+def show_one():
+    print("\nShow Specific Password\n")
+    search = input("Please enter the name of the website that you require the password from:\n")
+
+    with connect:
+        with connect.cursor() as cursor:
+            cursor.execute("SELECT * FROM password WHERE LOWER(website) LIKE %s || '%%'", [search.lower()])
+            search_query = cursor.fetchall()
+
+    if len(search_query) == 0:
+        print(f"\nPassword for website {search} not found. Would you like to make a password for this website?")
+        res = input("Enter y to accept:\n")
+        if res.lower() == "y" or res.lower() == "yes":
+            create_row()
+        return
+
+    if len(search_query) > 1:
+        print("\nThere are multiple stored records which match your input. Please select the website and email you require the password from:\n")
+        print("Value\tWebsite\tEmail".expandtabs(20))
+        print("------------------------------------------------------------")
+        for i in range(len(search_query)):
+            print(f"{i+1}.\t{search_query[i][2]}\t{search_query[i][2]}".expandtabs(20))
+        print("")
+        index = None
+        while not(index):
+            user_input = input()
+            if not(user_input.isnumeric()):
+                print("Invalid Input Format. Please Try Again\n")
+            elif int(user_input) < 1 or int(user_input) > len(search_query):
+                print("Input Out Of Range. Please Try Again\n")
+            else:
+                index = int(user_input)
+
+        final = search_query[index - 1]
+    else:
+        final = search_query[0]
+
+    print("\nHere is your password:\n")
+    print(f"Website: {final[1]}\nEmail: {final[2]}\nPassword: {final[3]}\n")
+    input("Press Enter to return to the main menu...\n")
 
 def show_all():
+    print("\nShow All Passwords\n")
     with connect:
         with connect.cursor() as cursor:
             cursor.execute("SELECT * FROM password")
             select_query = cursor.fetchall()
-            print("\nWebsite\tEmail\tPassword".expandtabs(20))
-            print("------------------------------------------------------------")
-            for row in select_query:
-                print(f"{row[1]}\t{row[2]}\t{row[3]}".expandtabs(20))
-            print("")
+
+    print("Website\tEmail\tPassword".expandtabs(20))
+    print("------------------------------------------------------------")
+    for row in select_query:
+        print(f"{row[1]}\t{row[2]}\t{row[3]}".expandtabs(20))
+    print("")
+    input("Press Enter to return to the main menu...\n")

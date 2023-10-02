@@ -1,4 +1,4 @@
-name: pg-ms
+name: ps-mg
 services:
   app:
     container_name: ps-mg-app
@@ -11,7 +11,6 @@ services:
   db:
     container_name: ps-mg-db
     build: ./db
-    # image: postgres
     env_file:
       - ./.env
     ports:
