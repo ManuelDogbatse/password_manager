@@ -1,7 +1,6 @@
-name: ps-mg
+name: pwd-mg
 services:
   app:
-    container_name: ps-mg-app
     build: ./app
     env_file:
       - ./.env
@@ -9,14 +8,13 @@ services:
       db:
         condition: service_healthy
   db:
-    container_name: ps-mg-db
     build: ./db
     env_file:
       - ./.env
     ports:
       - 5432:5432
     volumes:
-      - ps_mg:/data
+      - pwd_mg:/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
@@ -24,4 +22,4 @@ services:
       retries: 5
 
 volumes:
-  ps_mg:
+  pwd_mg:

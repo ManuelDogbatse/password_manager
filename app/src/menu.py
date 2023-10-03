@@ -1,33 +1,36 @@
-import os
 import sys
-
+from cls import cls
 from password import generate_password
 from db import connect
 
 def menu():
-    print("------------------------------------------------------------")
+    print("----------------------------------------------------------------------------------------------------------------------------------------------------------------")
+    print("My Password Manager")
+    print("----------------------------------------------------------------------------------------------------------------------------------------------------------------")
     print("Please enter the number for one of the following options:")
     print("1. Generate New Password")
     print("2. Show Specific Password")
     print("3. Show All Passwords")
     print("4. Exit")
-    print("------------------------------------------------------------")
+    print("----------------------------------------------------------------------------------------------------------------------------------------------------------------")
 
     user_input = input()
 
     if user_input == "1":
+        cls()
         create_row()
+        cls()
     elif user_input == "2":
+        cls()
         show_one()
+        cls()
     elif user_input == "3":
+        cls()
         show_all()
+        cls()
     elif user_input == "4":
         print("Exiting program\n")
-        # "clear" for Mac/Linux, "cls" for Windows
-        if os.name == "posix":
-            os.system("clear")
-        else:
-            os.system("cls")
+        cls()
         sys.exit(0)
     else:
         print("Invalid Input Format. Please Try Again")
@@ -72,15 +75,16 @@ def show_one():
         print(f"\nPassword for website {search} not found. Would you like to make a password for this website?")
         res = input("Enter y to accept:\n")
         if res.lower() == "y" or res.lower() == "yes":
+            cls()
             create_row()
         return
 
     if len(search_query) > 1:
         print("\nThere are multiple stored records which match your input. Please select the website and email you require the password from:\n")
-        print("Value\tWebsite\tEmail".expandtabs(20))
-        print("------------------------------------------------------------")
+        print("Value\tWebsite\tEmail".expandtabs(45))
+        print("----------------------------------------------------------------------------------------------------------------------------------------------------------------")
         for i in range(len(search_query)):
-            print(f"{i+1}.\t{search_query[i][2]}\t{search_query[i][2]}".expandtabs(20))
+            print(f"{i+1}.\t{search_query[i][1]}\t{search_query[i][2]}".expandtabs(45))
         print("")
         index = None
         while not(index):
@@ -107,9 +111,9 @@ def show_all():
             cursor.execute("SELECT * FROM password")
             select_query = cursor.fetchall()
 
-    print("Website\tEmail\tPassword".expandtabs(20))
-    print("------------------------------------------------------------")
+    print("Website\tEmail\tPassword".expandtabs(45))
+    print("----------------------------------------------------------------------------------------------------------------------------------------------------------------")
     for row in select_query:
-        print(f"{row[1]}\t{row[2]}\t{row[3]}".expandtabs(20))
+        print(f"{row[1]}\t{row[2]}\t{row[3]}".expandtabs(45))
     print("")
     input("Press Enter to return to the main menu...\n")

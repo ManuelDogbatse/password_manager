@@ -1,7 +1,7 @@
 # Dockerfile, Image, Container
 FROM python:3.11
 
-WORKDIR /ps-mg-app
+WORKDIR /pwd-mg-app
 
 COPY requirements.txt .
 

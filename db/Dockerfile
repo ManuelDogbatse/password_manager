@@ -1,5 +1,5 @@
 FROM postgres
 
-WORKDIR /pg-mg-db
+WORKDIR /pwd-mg-db
 
 ADD ./createDB.sql /docker-entrypoint-initdb.d/
