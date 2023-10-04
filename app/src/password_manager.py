@@ -33,7 +33,7 @@ else:
         cls()
     else:
         print("Incorrect Password")
-        input()
+        input("Press Enter to quit...\n")
         cls()
         sys.exit(0)
 

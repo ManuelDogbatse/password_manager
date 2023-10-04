@@ -11,7 +11,8 @@ def menu():
     print("1. Generate New Password")
     print("2. Show Specific Password")
     print("3. Show All Passwords")
-    print("4. Exit")
+    print("4. Delete Login Credentials")
+    print("5. Exit")
     print("----------------------------------------------------------------------------------------------------------------------------------------------------------------")
 
     user_input = input()
@@ -29,6 +30,10 @@ def menu():
         show_all()
         cls()
     elif user_input == "4":
+        cls()
+        delete_row()
+        cls()
+    elif user_input == "5":
         print("Exiting program\n")
         cls()
         sys.exit(0)
@@ -36,7 +41,7 @@ def menu():
         print("Invalid Input Format. Please Try Again")
 
 def create_row():
-    print("\nGenerate New Password\n")
+    print("Generate New Password\n")
     website = input("Please enter the name of the website you would like to create a password for:\n")
     email = input("Please enter the email address you will use for the website:\n")
     pwd_len = None
@@ -63,12 +68,12 @@ def create_row():
     input("Press Enter to return to the main menu...\n")
 
 def show_one():
-    print("\nShow Specific Password\n")
+    print("Show Specific Password\n")
     search = input("Please enter the name of the website that you require the password from:\n")
 
     with connect:
         with connect.cursor() as cursor:
-            cursor.execute("SELECT * FROM password WHERE LOWER(website) LIKE %s || '%%'", [search.lower()])
+            cursor.execute(f"SELECT * FROM password WHERE LOWER(website) LIKE %s || '%%'", [search.lower()])
             search_query = cursor.fetchall()
 
     if len(search_query) == 0:
@@ -78,8 +83,7 @@ def show_one():
             cls()
             create_row()
         return
-
-    if len(search_query) > 1:
+    elif len(search_query) > 1:
         print("\nThere are multiple stored records which match your input. Please select the website and email you require the password from:\n")
         print("Value\tWebsite\tEmail".expandtabs(45))
         print("----------------------------------------------------------------------------------------------------------------------------------------------------------------")
@@ -116,4 +120,57 @@ def show_all():
     for row in select_query:
         print(f"{row[1]}\t{row[2]}\t{row[3]}".expandtabs(45))
     print("")
+    input("Press Enter to return to the main menu...\n")
+
+def delete_row():
+    while True:
+        print("Delete Login Credentials\n")
+        search = input("Please enter the name of the website of the login credentials you would like to delete:\n")
+
+        with connect:
+            with connect.cursor() as cursor:
+                cursor.execute(f"SELECT * FROM password WHERE LOWER(website) LIKE %s || '%%'", [search.lower()])
+                search_query = cursor.fetchall()
+
+    
+        if len(search_query) == 0:
+            print(f"\nWebsite {search} not found. Would you like to try again?")
+            res = input("Enter y/yes to accept:\n")
+            if res.lower() == "y" or res.lower() == "yes":
+                cls()
+                continue
+            return
+        break
+
+    if len(search_query) > 1:
+        print("\nThere are multiple stored records which match your input. Please select the login credentials you would like to delete:\n")
+        print("Value\tWebsite\tEmail".expandtabs(45))
+        print("----------------------------------------------------------------------------------------------------------------------------------------------------------------")
+        for i in range(len(search_query)):
+            print(f"{i+1}.\t{search_query[i][1]}\t{search_query[i][2]}".expandtabs(45))
+        print("")
+        index = None
+        while not(index):
+            user_input = input()
+            if not(user_input.isnumeric()):
+                print("Invalid Input Format. Please Try Again\n")
+            elif int(user_input) < 1 or int(user_input) > len(search_query):
+                print("Input Out Of Range. Please Try Again\n")
+            else:
+                index = int(user_input)
+
+        final = search_query[index - 1]
+    else:
+        final = search_query[0]
+
+    print("\nAre you sure you would like to delete these user credentials?:\n")
+    print(f"Website: {final[1]}\nEmail: {final[2]}\n")
+    res = input("Enter y/yes to confirm:\n")
+    if res.lower() == "y" or res.lower() == "yes":
+        with connect:
+            with connect.cursor() as cursor:
+                cursor.execute(f"DELETE FROM password WHERE id = %s", [final[0]])
+        print("\nCredentials successfully deleted\n")
+    else:
+        print("\nCredentials not deleted\n")
     input("Press Enter to return to the main menu...\n")
