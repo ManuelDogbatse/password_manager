@@ -5,9 +5,10 @@ CREATE TABLE password(
     password TEXT NOT NULL UNIQUE
 );
 
-CREATE TABLE master_password(
-	password TEXT
+CREATE TABLE auth_config(
+	master_password TEXT DEFAULT NULL,
+    is_2fa BOOLEAN NOT NULL DEFAULT FALSE
 );
 
-INSERT INTO master_password
+INSERT INTO auth_config
 VALUES (NULL);
