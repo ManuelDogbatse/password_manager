@@ -1,4 +1,4 @@
-CREATE TABLE password(
+CREATE TABLE login_cred(
     id SERIAL PRIMARY KEY,
     website TEXT NOT NULL,
     email TEXT NOT NULL,
@@ -6,8 +6,7 @@ CREATE TABLE password(
 );
 
 CREATE TABLE auth_config(
-	master_password TEXT DEFAULT NULL,
-    is_2fa BOOLEAN NOT NULL DEFAULT FALSE
+	master_password TEXT DEFAULT NULL
 );
 
 INSERT INTO auth_config

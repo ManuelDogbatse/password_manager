@@ -8,7 +8,7 @@ def main():
     if not(auth()):
         sys.exit(0)
     while True:
-        if menu():
+        if not(menu()):
             break
 
 if __name__ == "__main__":
